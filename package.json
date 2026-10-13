@@ -1,6 +1,6 @@
 {
   "name": "binary-sentinel",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Static PE/ELF triage in pure JS: headers, sections, entropy, imports, imphash, Rich header, overlays, TLS callbacks, packer hints (UPX, ASPack, VMProtect...), suspicious API capabilities mapped to ATT&CK, and hardening (ASLR, NX, CFG, PIE, RELRO, canary). Never executes samples. Zero deps.",
   "type": "module",
   "main": "./src/index.js",
