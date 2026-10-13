@@ -1,0 +1,60 @@
+{
+  "name": "binary-sentinel",
+  "version": "0.0.0",
+  "description": "Static PE/ELF triage in pure JS: headers, sections, entropy, imports, imphash, Rich header, overlays, TLS callbacks, packer hints (UPX, ASPack, VMProtect...), suspicious API capabilities mapped to ATT&CK, and hardening (ASLR, NX, CFG, PIE, RELRO, canary). Never executes samples. Zero deps.",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "binary-sentinel": "bin/binary-sentinel.js"
+  },
+  "files": [
+    "src",
+    "bin",
+    "action.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "pe",
+    "elf",
+    "malware-analysis",
+    "static-analysis",
+    "imphash",
+    "entropy",
+    "packer",
+    "upx",
+    "reverse-engineering",
+    "triage",
+    "dfir",
+    "checksec",
+    "security",
+    "sarif",
+    "cli",
+    "github-action"
+  ],
+  "author": "Louis Wright <hello@louiswright.co.uk> (https://github.com/MrLouisWright)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrLouisWright/binary-sentinel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrLouisWright/binary-sentinel/issues"
+  },
+  "homepage": "https://github.com/MrLouisWright/binary-sentinel#readme"
+}

@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix: { node: [18, 20, 22] }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: '${{ matrix.node }}' }
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: npm pack --dry-run
+      - name: Smoke test CLI
+        run: |
+          node bin/binary-sentinel.js --version
+          node bin/binary-sentinel.js --list-rules
+          node bin/binary-sentinel.js test/fixtures --fail-on none
+          node bin/binary-sentinel.js /bin/ls --profile hardening --fail-on none

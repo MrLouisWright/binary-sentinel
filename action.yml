@@ -1,0 +1,51 @@
+name: 'binary-sentinel'
+description: 'Static PE/ELF triage: packers, entropy, suspicious imports, imphash and binary hardening checks'
+author: 'Louis Wright'
+branding: { icon: 'cpu', color: 'purple' }
+inputs:
+  targets: { description: 'Files or directories with executables (space-separated)', default: '.' }
+  profile: { description: 'triage (malware hunting) or hardening (build checks)', default: '' }
+  fail-on: { description: 'critical | high | medium | low | info | none', default: 'high' }
+  config: { description: 'Path to JSON config file', default: '' }
+  sarif: { description: 'Write SARIF to this path', default: '' }
+  json: { description: 'Write JSON report to this path', default: '' }
+  job-summary: { description: 'Write the Markdown report to the job summary (true/false)', default: 'true' }
+  args: { description: 'Extra CLI arguments', default: '' }
+outputs:
+  markdown-file: { description: 'Path of the Markdown report', value: '${{ steps.run.outputs.markdown-file }}' }
+  exit-code: { description: 'Exit code of the scan (0 pass, 1 findings, 2 error)', value: '${{ steps.run.outputs.exit-code }}' }
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with: { node-version: '20' }
+    - id: run
+      shell: bash
+      env:
+        BS_TARGETS: ${{ inputs.targets }}
+        BS_PROFILE: ${{ inputs.profile }}
+        BS_FAIL_ON: ${{ inputs.fail-on }}
+        BS_CONFIG: ${{ inputs.config }}
+        BS_SARIF: ${{ inputs.sarif }}
+        BS_JSON: ${{ inputs.json }}
+        BS_JOB_SUMMARY: ${{ inputs.job-summary }}
+        BS_ARGS: ${{ inputs.args }}
+        BS_BIN: ${{ github.action_path }}/bin/binary-sentinel.js
+      run: |
+        md="$RUNNER_TEMP/binary-sentinel.md"
+        # shellcheck disable=SC2206
+        targets=($BS_TARGETS)
+        args=("${targets[@]}" --fail-on "$BS_FAIL_ON" --markdown "$md")
+        [ -n "$BS_PROFILE" ] && args+=(--profile "$BS_PROFILE")
+        [ -n "$BS_CONFIG" ] && args+=(--config "$BS_CONFIG")
+        [ -n "$BS_SARIF" ] && args+=(--sarif "$BS_SARIF")
+        [ -n "$BS_JSON" ] && args+=(--json "$BS_JSON")
+        set +e
+        # shellcheck disable=SC2086
+        node "$BS_BIN" "${args[@]}" $BS_ARGS
+        code=$?
+        set -e
+        echo "markdown-file=$md" >> "$GITHUB_OUTPUT"
+        echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+        if [ "$BS_JOB_SUMMARY" = "true" ] && [ -f "$md" ]; then cat "$md" >> "$GITHUB_STEP_SUMMARY"; fi
+        exit $code
