@@ -293,3 +293,9 @@ ul.tools.tools-flag{grid-template-columns:minmax(0,1fr);gap:14px}
 .sup-nav:hover,.btn.sup-btn:hover{color:#fff;background:#b4282b;border-color:#b4282b;box-shadow:0 10px 30px -8px rgba(229,56,59,.9)}
 .sup-nav:focus-visible,.btn.sup-btn:focus-visible{outline:2px solid #fff;outline-offset:3px;box-shadow:0 0 0 6px rgba(229,56,59,.45)}
 .btn.sup-btn{font-weight:600}
+html body .nav a.sup-nav:not(.brand),html body .nav a.sup-nav:not(.brand):link,html body .nav a.sup-nav:not(.brand):visited,html body .nav a.sup-nav:not(.brand):hover,html body .nav a.sup-nav:not(.brand):focus,html body .nav a.sup-nav:not(.brand):focus-visible,html body .nav a.sup-nav:not(.brand):active,
+html body a.btn.sup-btn,html body a.btn.sup-btn:link,html body a.btn.sup-btn:visited,html body a.btn.sup-btn:hover,html body a.btn.sup-btn:focus,html body a.btn.sup-btn:focus-visible,html body a.btn.sup-btn:active{color:#ffffff!important;opacity:1!important;filter:none!important;-webkit-text-fill-color:#ffffff}
+html body a.sup-nav .ic,html body a.sup-nav span,html body a.btn.sup-btn .ic,html body a.btn.sup-btn span{color:#ffffff!important;opacity:1!important}
+html body .nav a.sup-nav:not(.brand){background:#d62f33}
+html body .nav a.sup-nav:not(.brand):hover,html body .nav a.sup-nav:not(.brand):active{background:#b4282b}
+html body a.btn.sup-btn:active{background:#b4282b;transform:translateY(0)}
