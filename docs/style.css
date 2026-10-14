@@ -112,3 +112,8 @@ ul.tools .tool{display:block;padding:10px 12px;border-left:3px solid var(--a);he
 ul.tools .tool small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fam[hidden],ul.tools li[hidden]{display:none}
 .tagline.long{font-size:clamp(16px,1.6vw,19px)}
+.hero-copy{min-width:0}
+.steps,.install,.hint{max-width:100%}
+.hint code{word-break:break-all}
+@media (max-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
+.step-t{flex-wrap:wrap}
