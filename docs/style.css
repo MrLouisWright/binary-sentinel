@@ -238,3 +238,7 @@ ul.tools{grid-template-columns:minmax(0,1fr)}
 .step-t{display:block}
 .step-t span{display:inline-grid;vertical-align:-4px;margin-right:8px}
 @media (min-width:1000px) and (max-width:1279px){.install code{font-size:12.5px}.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+/* v3.1 */
+.narrow{width:min(100% - 2*var(--gutter),1440px)}
+.narrow .big{max-width:72ch}
+@media (max-width:1279px){.install code{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;overflow-x:visible}}
