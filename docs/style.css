@@ -287,3 +287,9 @@ ul.tools.tools-flag{grid-template-columns:minmax(0,1fr);gap:14px}
 .sup-fine{margin:12px 0 0;font-size:12.5px;color:var(--muted)}
 .sup-img{display:block;width:100%;height:220px;object-fit:cover;object-position:50% 45%;-webkit-mask-image:linear-gradient(180deg,transparent,#000 35%);mask-image:linear-gradient(180deg,transparent,#000 35%)}
 @media (min-width:860px){.sup-card{grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)}.sup-img{height:100%;min-height:340px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 40%);mask-image:linear-gradient(90deg,transparent,#000 40%)}}
+
+.sup-nav,.btn.sup-btn{color:#fff;background:#d62f33;border:1px solid #d62f33;box-shadow:0 6px 22px -8px rgba(229,56,59,.75)}
+.sup-nav .ic,.btn.sup-btn .ic{color:#fff}
+.sup-nav:hover,.btn.sup-btn:hover{color:#fff;background:#b4282b;border-color:#b4282b;box-shadow:0 10px 30px -8px rgba(229,56,59,.9)}
+.sup-nav:focus-visible,.btn.sup-btn:focus-visible{outline:2px solid #fff;outline-offset:3px;box-shadow:0 0 0 6px rgba(229,56,59,.45)}
+.btn.sup-btn{font-weight:600}
