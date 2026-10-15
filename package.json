@@ -1,14 +1,21 @@
 {
   "name": "binary-sentinel",
-  "version": "1.0.0",
-  "description": "Static PE/ELF triage in pure JS: headers, sections, entropy, imports, imphash, Rich header, overlays, TLS callbacks, packer hints (UPX, ASPack, VMProtect...), suspicious API capabilities mapped to ATT&CK, and hardening (ASLR, NX, CFG, PIE, RELRO, canary). Never executes samples. Zero deps.",
+  "version": "1.1.0",
+  "description": "Static PE/ELF/Mach-O triage in pure JS: headers, sections, entropy, imports, imphash, Rich header, overlays, TLS callbacks, packer hints (UPX, ASPack, VMProtect...), suspicious API capabilities mapped to ATT&CK, and hardening (ASLR, NX, CFG, PIE, RELRO, canary). Never executes samples. Zero deps.",
   "type": "module",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "default": "./src/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./package.json": "./package.json"
   },
@@ -16,18 +23,23 @@
     "binary-sentinel": "bin/binary-sentinel.js"
   },
   "files": [
+    "dist",
     "src",
     "bin",
     "action.yml",
     "README.md",
     "CHANGELOG.md",
-    "LICENSE"
+    "LICENSE",
+    "rules"
   ],
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "build": "node scripts/build.mjs",
+    "pretest": "npm run build",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "pe",
@@ -45,7 +57,10 @@
     "security",
     "sarif",
     "cli",
-    "github-action"
+    "github-action",
+    "macho",
+    "authenticode",
+    "capa"
   ],
   "author": "Louis Wright <hello@louiswright.co.uk> (https://github.com/MrLouisWright)",
   "license": "MIT",
@@ -60,5 +75,9 @@
   "bugs": {
     "url": "https://github.com/MrLouisWright/binary-sentinel/issues"
   },
-  "homepage": "https://mrlouiswright.github.io/binary-sentinel/"
+  "homepage": "https://mrlouiswright.github.io/binary-sentinel/",
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.2"
+  }
 }

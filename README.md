@@ -16,6 +16,28 @@ CLI, library and GitHub Action. Node.js 18+, **zero runtime dependencies**, no n
 
 Every file also gets its MD5/SHA1/SHA256/SHA512, overall entropy and a magic-byte type (also recognises Mach-O, ZIP, PDF, OLE, LNK, RAR, 7z, CAB, ISO, scripts…).
 
+## Mach-O, Authenticode and capability rules
+
+```sh
+binary-sentinel ./MyApp.app/Contents/MacOS/MyApp      # Mach-O (thin or universal)
+binary-sentinel setup.exe                             # verifies the Authenticode signature
+binary-sentinel ./samples --rules ./my-capa-rules/    # capa-style YAML rules
+```
+
+Capability rules use a subset of the [capa rule format](https://github.com/mandiant/capa-rules): `api`, `import`, `export`, `string` (exact or `/regex/i`), `substring`, `section`, `format`, `os`, `arch`, `match` and `characteristic: embedded pe`, combined with `and`, `or`, `not`, `optional` and `N or more`. All scopes are evaluated at file level; features that need disassembly (`bytes`, `number`, `mnemonic`, `offset`) never match. Set `meta.severity` to choose the finding severity.
+
+Authenticode verification checks the image hash, the signed digest and the signer's signature (including nested signatures). It does not consult an OS trust store: a valid signature from a certificate chain you don't trust is still reported as valid, with the chain listed in JSON output (`--details`).
+
+```js
+import { analyzeBuffer, verifyAuthenticode, parseMachO, loadRules } from 'binary-sentinel';
+const { info, raw, summary } = analyzeBuffer(buf, 'file.exe', { rules: loadRules('./rules') });
+```
+
+### Module formats and types
+
+Ships **ESM and CommonJS** (`import` and `require` both work, via `exports`), with TypeScript declarations generated from the source at build time. Tests run on Node 18/20/22 in GitHub Actions (`test/`), including require/import checks against the packed tarball; releases are published with npm provenance.
+
+
 ## Rules
 
 | Rule | Default | What it means |
@@ -36,7 +58,11 @@ Every file also gets its MD5/SHA1/SHA256/SHA512, overall entropy and a magic-byt
 | `overlay` | low (medium if high-entropy) | Data after the last section |
 | `timestamp-anomaly`, `checksum-mismatch` | low | Forged/zero/future timestamps; file modified after linking |
 | `no-aslr`, `no-nx`, `no-relro` | low | Missing hardening (high in `--profile hardening`) |
-| `no-cfg`, `no-canary`, `unsigned`, `dotnet`, `unsupported-format` | info | Context |
+| `signature-invalid`, `masquerading` | high | Authenticode does not verify; vendor version info without a valid signature |
+| `embedded-executable` | high | Overlay or PE resource that is itself an executable |
+| `signature-untrusted`, `high-entropy-resource`, `dylib-hijack-risk`, `capability-rule` | medium | Self-signed signer; encrypted resource payload; weak @rpath dylib; custom rule match (severity from `meta.severity`) |
+| `signature-expired`, `version-info-mismatch` | low | Expired signer without timestamp; renamed binary |
+| `no-cfg`, `no-canary`, `unsigned`, `adhoc-signed`, `encrypted-binary`, `dotnet`, `unsupported-format` | info | Context (`unsupported-format` = DOS MZ only) |
 
 Network, process, discovery, crypto and memory APIs are listed as capabilities in the summary but do not raise findings on their own, because almost every program uses them. `IsDebuggerPresent` on its own is ignored because the MSVC CRT imports it.
 

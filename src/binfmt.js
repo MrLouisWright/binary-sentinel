@@ -1,5 +1,7 @@
 // Pure-JS static parsers for PE (Windows) and ELF (Linux/Unix) executables. Never executes anything.
 import { createHash } from 'node:crypto';
+import { parseResources, parseVersionInfo } from './resources.js';
+import { parseMachO } from './macho.js';
 
 export function entropy(buf, start = 0, end = buf.length) {
   const n = end - start; if (n <= 0) return 0;
@@ -126,6 +128,18 @@ export function parsePE(buf) {
       }
     }
   } catch (e) { anomalies.push(`export directory: ${e.message}`); }
+  // resources + version info
+  let resources = []; let versionInfo = null;
+  try {
+    if (dirs.resource) {
+      const ro = rva2off(dirs.resource.va);
+      if (ro >= 0) {
+        resources = parseResources(buf, ro, rva2off);
+        const v = resources.find((x) => x.type === 'VERSION' && !x.truncated);
+        if (v) versionInfo = parseVersionInfo(buf.subarray(v.offset, v.offset + v.size));
+      }
+    }
+  } catch (e) { anomalies.push(`resource directory: ${e.message}`); }
   // TLS callbacks
   let tlsCallbacks = 0;
   try {
@@ -165,7 +179,7 @@ export function parsePE(buf) {
     format: 'pe', bits: pe32plus ? 64 : 32, machine: MACHINES[machine] || `0x${machine.toString(16)}`, timestamp: ts, timestampIso: ts ? new Date(ts * 1000).toISOString() : null,
     subsystem: SUBSYSTEMS[subsystem] || `unknown(${subsystem})`, entryPoint: ep, entrySection: epSection?.name ?? null, imageBase: `0x${imageBase.toString(16)}`,
     sectionAlignment: sectionAlign, fileAlignment: fileAlign, sizeOfImage, sizeOfHeaders, checksum, flags, directories: dirs,
-    dotnet: !!dirs.clr, signed: !!(dirs.security && dirs.security.size), sections, imports, importError, imphash, exports, tlsCallbacks, rich, overlay, anomalies,
+    dotnet: !!dirs.clr, signed: !!(dirs.security && dirs.security.size), sections, imports, importError, imphash, exports, tlsCallbacks, rich, overlay, resources, versionInfo, anomalies,
   };
 }
 
@@ -260,5 +274,6 @@ export function parseBinary(buf) {
   const t = detectType(buf);
   if (t === 'pe') return parsePE(buf);
   if (t === 'elf') return parseELF(buf);
+  if (t === 'macho' || t === 'macho-fat') return parseMachO(buf);
   return null;
 }

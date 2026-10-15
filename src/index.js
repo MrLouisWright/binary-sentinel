@@ -3,7 +3,18 @@ import { join, relative } from 'node:path';
 import { buildReport, exceeds, exitCode, formatText, formatJson, formatSarif, formatMarkdown, SEVERITIES, ConfigError, validateConfig } from './core.js';
 import { RULES } from './rules.js';
 import { parsePE, parseELF, parseBinary, detectType, entropy, hashes, PACKER_SECTIONS } from './binfmt.js';
-import { capabilities, CAPABILITIES } from './capabilities.js';
+import { capabilities, CAPABILITIES, BUILTIN_RULES } from './capabilities.js';
+import { parseMachO, isMachO } from './macho.js';
+import { verifyAuthenticode, imageHash, parseSignedData } from './authenticode.js';
+import { parseResources, parseVersionInfo, RESOURCE_TYPES } from './resources.js';
+import { parseRules, loadRules, matchRules, featuresOf, extractStrings, parseYaml } from './capa.js';
+
+export { parseMachO, isMachO, verifyAuthenticode, imageHash, parseSignedData, parseResources, parseVersionInfo, RESOURCE_TYPES, parseRules, loadRules, matchRules, featuresOf, extractStrings, parseYaml, BUILTIN_RULES };
+
+/** Resolve opts.rules: compiled rules, rule file/dir paths, or a mix. */
+export function resolveRules(rules = []) {
+  return [].concat(rules || []).flatMap((r) => (typeof r === 'string' ? loadRules(r) : r.root ? [r] : parseRules(JSON.stringify(r), 'inline')));
+}
 import { analyzeBuffer, peChecksum } from './analyze.js';
 
 export { parsePE, parseELF, parseBinary, detectType, entropy, hashes, PACKER_SECTIONS, capabilities, CAPABILITIES, analyzeBuffer, peChecksum, RULES, exceeds, exitCode, formatText, formatJson, formatSarif, formatMarkdown, SEVERITIES, ConfigError };
@@ -21,7 +32,7 @@ function walk(p, out = []) {
   return out;
 }
 function magicOf(f) { const fd = openSync(f, 'r'); const b = Buffer.alloc(0x200); const n = readSync(fd, b, 0, 0x200, 0); closeSync(fd); return b.subarray(0, n); }
-const isExe = (b) => b.length >= 4 && (b.toString('latin1', 0, 2) === 'MZ' || b.toString('latin1', 0, 4) === '\x7fELF' || [0xfeedface, 0xfeedfacf, 0xcefaedfe, 0xcffaedfe].includes(b.readUInt32BE(0)));
+const isExe = (b) => b.length >= 4 && (isMachO(b) || b.toString('latin1', 0, 2) === 'MZ' || b.toString('latin1', 0, 4) === '\x7fELF' || [0xfeedface, 0xfeedfacf, 0xcefaedfe, 0xcffaedfe].includes(b.readUInt32BE(0)));
 
 /**
  * Triage files or directories. Directories are searched for PE/ELF/Mach-O files by magic bytes.
@@ -31,6 +42,8 @@ export function triage(inputs, opts = {}) {
   validateConfig({ allow: opts.allow, severity: opts.severity });
   const profile = PROFILES[opts.profile || 'triage'];
   if (!profile) throw new ConfigError(`Unknown profile "${opts.profile}" (have ${Object.keys(PROFILES).join(', ')})`);
+  let rules; try { rules = resolveRules(opts.rules); } catch (e) { throw new ConfigError(`Cannot load rules: ${e.message}`); }
+  opts = { ...opts, rules };
   const results = [];
   for (const inp of inputs) {
     if (typeof inp === 'object') { results.push(one(inp.name, Buffer.from(inp.buffer))); continue; }

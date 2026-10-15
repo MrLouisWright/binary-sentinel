@@ -22,6 +22,12 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm test
       - run: npm pack --dry-run
+      - name: Require + import from packed tarball
+        run: |
+          npm pack --silent
+          mkdir -p /tmp/smoke && cd /tmp/smoke && npm init -y >/dev/null && npm i "$GITHUB_WORKSPACE"/binary-sentinel-*.tgz
+          node -e "const m=require('binary-sentinel'); if(!Object.keys(m).length) process.exit(1)"
+          node --input-type=module -e "const m=await import('binary-sentinel'); if(!Object.keys(m).length) process.exit(1)"
       - name: Smoke test CLI
         run: |
           node bin/binary-sentinel.js --version

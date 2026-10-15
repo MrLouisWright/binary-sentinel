@@ -1,0 +1,251 @@
+# Built-in binary-sentinel capability rules (capa rule format subset).
+# Add your own with --rules <file|dir>; see README "Capability rules".
+---
+rule:
+  meta:
+    name: process injection
+    id: injection
+    att&ck:
+      - Defense Evasion::Process Injection [T1055]
+  features:
+    - or:
+      - api: VirtualAllocEx
+      - api: WriteProcessMemory
+      - api: CreateRemoteThread
+      - api: NtWriteVirtualMemory
+      - api: NtCreateThreadEx
+      - api: RtlCreateUserThread
+      - api: QueueUserAPC
+      - api: NtQueueApcThread
+      - api: SetThreadContext
+      - api: NtUnmapViewOfSection
+      - api: ZwUnmapViewOfSection
+      - api: NtMapViewOfSection
+      - api: VirtualProtectEx
+---
+rule:
+  meta:
+    name: debugger evasion
+    id: anti-debug
+    att&ck:
+      - Defense Evasion::Debugger Evasion [T1622]
+  features:
+    - or:
+      - api: IsDebuggerPresent
+      - api: CheckRemoteDebuggerPresent
+      - api: NtQueryInformationProcess
+      - api: OutputDebugString
+      - api: NtSetInformationThread
+      - api: ptrace
+---
+rule:
+  meta:
+    name: keylogging
+    id: keylogging
+    att&ck:
+      - Collection::Input Capture::Keylogging [T1056.001]
+  features:
+    - or:
+      - api: SetWindowsHook
+      - api: GetAsyncKeyState
+      - api: GetKeyboardState
+      - api: RegisterRawInputDevices
+---
+rule:
+  meta:
+    name: screen capture
+    id: screen-capture
+    att&ck:
+      - Collection::Screen Capture [T1113]
+  features:
+    - or:
+      - api: BitBlt
+      - api: GetDesktopWindow
+      - api: CreateCompatibleBitmap
+---
+rule:
+  meta:
+    name: credential access
+    id: credential-access
+    att&ck:
+      - Credential Access::OS Credential Dumping [T1003]
+  features:
+    - or:
+      - api: CredEnumerate
+      - api: CredRead
+      - api: LsaRetrievePrivateData
+      - api: CryptUnprotectData
+      - api: MiniDumpWriteDump
+      - api: SamIConnect
+      - api: LsaEnumerateLogonSessions
+---
+rule:
+  meta:
+    name: downloads files
+    id: download
+    att&ck:
+      - Command and Control::Ingress Tool Transfer [T1105]
+  features:
+    - or:
+      - api: URLDownloadToFile
+      - api: URLDownloadToCacheFile
+      - api: InternetReadFile
+      - api: InternetOpenUrl
+      - api: WinHttpReadData
+      - api: HttpSendRequest
+---
+rule:
+  meta:
+    name: network communication
+    id: network
+    att&ck:
+      - Command and Control::Application Layer Protocol [T1071]
+  features:
+    - or:
+      - api: WSAStartup
+      - api: InternetOpen
+      - api: WinHttpOpen
+      - api: connect
+      - api: send
+      - api: recv
+      - api: socket
+      - api: gethostbyname
+      - api: getaddrinfo
+      - api: DnsQuery
+---
+rule:
+  meta:
+    name: launches processes
+    id: execution
+    att&ck:
+      - Execution::Native API [T1106]
+  features:
+    - or:
+      - api: CreateProcess
+      - api: ShellExecute
+      - api: WinExec
+      - api: CreateProcessAsUser
+      - api: CreateProcessWithToken
+      - api: execve
+      - api: execvp
+      - api: execl
+      - api: system
+      - api: popen
+---
+rule:
+  meta:
+    name: registry persistence
+    id: persistence-registry
+    att&ck:
+      - Persistence::Registry Run Keys / Startup Folder [T1547.001]
+  features:
+    - or:
+      - api: RegSetValue
+      - api: RegCreateKey
+      - api: SHSetValue
+---
+rule:
+  meta:
+    name: service creation
+    id: persistence-service
+    att&ck:
+      - Persistence::Windows Service [T1543.003]
+  features:
+    - or:
+      - api: CreateService
+      - api: ChangeServiceConfig
+      - api: StartService
+---
+rule:
+  meta:
+    name: encryption APIs
+    id: crypto
+    att&ck:
+      - Impact::Data Encrypted for Impact [T1486]
+  features:
+    - or:
+      - api: CryptEncrypt
+      - api: BCryptEncrypt
+      - api: CryptGenKey
+      - api: CryptImportKey
+      - api: EVP_EncryptInit
+      - api: EVP_EncryptUpdate
+---
+rule:
+  meta:
+    name: token manipulation
+    id: privilege
+    att&ck:
+      - Privilege Escalation::Access Token Manipulation [T1134]
+  features:
+    - or:
+      - api: AdjustTokenPrivileges
+      - api: DuplicateToken
+      - api: ImpersonateLoggedOnUser
+      - api: LookupPrivilegeValue
+      - api: setuid
+---
+rule:
+  meta:
+    name: dynamic API resolution
+    id: dynamic-loading
+    att&ck:
+      - Execution::Shared Modules [T1129]
+  features:
+    - or:
+      - api: LoadLibrary
+      - api: GetProcAddress
+      - api: LdrLoadDll
+      - api: LdrGetProcedureAddress
+      - api: dlopen
+      - api: dlsym
+---
+rule:
+  meta:
+    name: executable memory allocation
+    id: memory-exec
+    att&ck:
+      - Defense Evasion::Reflective Code Loading [T1620]
+  features:
+    - or:
+      - api: VirtualAlloc
+      - api: VirtualProtect
+      - api: NtAllocateVirtualMemory
+      - api: NtProtectVirtualMemory
+      - api: mprotect
+---
+rule:
+  meta:
+    name: system discovery
+    id: discovery
+    att&ck:
+      - Discovery::System Information Discovery [T1082]
+  features:
+    - or:
+      - api: GetComputerName
+      - api: GetUserName
+      - api: CreateToolhelp32Snapshot
+      - api: Process32First
+      - api: EnumProcesses
+      - api: NetShareEnum
+---
+rule:
+  meta:
+    name: clipboard access
+    id: clipboard
+    att&ck:
+      - Collection::Clipboard Data [T1115]
+  features:
+    - or:
+      - api: GetClipboardData
+---
+rule:
+  meta:
+    name: event log clearing
+    id: log-tampering
+    att&ck:
+      - Defense Evasion::Clear Windows Event Logs [T1070.001]
+  features:
+    - or:
+      - api: ClearEventLog
+      - api: EvtClearLog
