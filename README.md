@@ -1,5 +1,7 @@
 # binary-sentinel
 
+[![npm version](https://img.shields.io/npm/v/binary-sentinel.svg)](https://www.npmjs.com/package/binary-sentinel) [![CI](https://github.com/MrLouisWright/binary-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/MrLouisWright/binary-sentinel/actions/workflows/ci.yml) [![Node](https://img.shields.io/node/v/binary-sentinel.svg)](https://nodejs.org) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 > Static PE and ELF triage in pure JavaScript: headers, sections, entropy, imports, imphash, packer hints, capabilities and hardening checks.
 
 `binary-sentinel` gives an analyst a quick first look at a Windows PE (EXE/DLL/SYS, 32- and 64-bit) or Linux/Unix ELF file without leaving the terminal or CI. The same parser can also check your own release binaries for missing hardening (ASLR, DEP/NX, CFG, PIE, RELRO, stack canaries). **Samples are only ever read as bytes and are never executed or loaded.**
