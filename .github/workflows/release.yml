@@ -3,6 +3,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      ref:
+        description: Tag to release (for example v1.2.3); defaults to the selected branch
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -14,7 +19,7 @@ jobs:
     permissions: { contents: read }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with: { persist-credentials: false }
+        with: { persist-credentials: false, ref: "${{ inputs.ref || github.ref }}" }
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: { node-version: 22 }
       - run: npm ci --ignore-scripts
@@ -30,11 +35,12 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with: { persist-credentials: false }
+        with: { persist-credentials: false, ref: "${{ inputs.ref || github.ref }}" }
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      - run: npm ci --ignore-scripts
       - name: Skip if version already published
         id: check
         run: |
@@ -59,12 +65,13 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with: { persist-credentials: false }
+        with: { persist-credentials: false, ref: "${{ inputs.ref || github.ref }}" }
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           registry-url: https://npm.pkg.github.com
           scope: '@mrlouiswright'
+      - run: npm ci --ignore-scripts
       - name: Rename to scoped package for GitHub Packages
         run: |
           npm pkg set name=@mrlouiswright/binary-sentinel
