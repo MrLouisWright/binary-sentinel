@@ -299,3 +299,9 @@ html body a.sup-nav .ic,html body a.sup-nav span,html body a.btn.sup-btn .ic,htm
 html body .nav a.sup-nav:not(.brand){background:#d62f33}
 html body .nav a.sup-nav:not(.brand):hover,html body .nav a.sup-nav:not(.brand):active{background:#b4282b}
 html body a.btn.sup-btn:active{background:#b4282b;transform:translateY(0)}
+
+/* header nav + footer credits */
+@media (max-width:900px){.nav ul li:has(> a[href^="#"]){display:none}}
+.foot .foot-credit,.foot .foot-legal{width:100%;line-height:1.6}
+.foot .foot-credit a,.foot .foot-legal a{color:var(--text);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-2)}
+.foot .foot-credit a:hover,.foot .foot-legal a:hover{text-decoration-color:currentColor}
