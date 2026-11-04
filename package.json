@@ -64,10 +64,16 @@
   ],
   "author": "Louis Wright <hello@louiswright.co.uk> (https://github.com/MrLouisWright)",
   "license": "MIT",
-  "funding": {
-    "type": "stripe",
-    "url": "https://donate.stripe.com/aFa00lek3cvX4Ds2Fk9EI0b"
-  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/MrLouisWright"
+    },
+    {
+      "type": "stripe",
+      "url": "https://donate.stripe.com/aFa00lek3cvX4Ds2Fk9EI0b"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MrLouisWright/binary-sentinel.git"
