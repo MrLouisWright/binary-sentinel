@@ -91,6 +91,33 @@ pe.imphash; pe.sections.map((s) => [s.name, s.entropy]); pe.tlsCallbacks; pe.ove
 const report = triage(['samples/'], { profile: 'triage' });
 ```
 
+## Options
+
+Full CLI reference (`binary-sentinel --help`):
+
+```text
+binary-sentinel 1.1.0 — static PE/ELF triage (headers, sections, entropy, imports, imphash, packers, hardening)
+
+Usage: binary-sentinel <file|dir...> [options]
+
+Samples are only read, never executed. Directories are searched for PE/ELF/Mach-O files by magic bytes.
+
+      --profile <p>          triage (default: packers, capabilities, anomalies) | hardening (ASLR/NX/RELRO/PIE/canary as high)
+      --rules <path>         capa-style rule file or directory (repeatable); matches report as capability-rule
+      --no-verify-signatures Skip Authenticode verification
+      --details              Include full parsed headers, sections and imports in JSON output
+Policy and output
+  -c, --config <file>        JSON config (default .binary-sentinel.json if present)
+  -f, --format <fmt>         text (default) | json | sarif | markdown
+      --json/--sarif/--markdown <file>  Also write that format to a file
+      --fail-on <sev>        critical | high | medium | low | info | none (default high)
+      --list-rules           Print rules and default severities
+      --no-color             Disable colours
+  -v, --version / -h, --help
+
+Exit codes: 0 = passed, 1 = findings at or above --fail-on, 2 = usage error or a target could not be checked.
+```
+
 ## Configuration
 
 Put a `.binary-sentinel.json` in the working directory (or pass `--config <file>`). Every key is optional; CLI flags override the file.
